@@ -1,0 +1,23 @@
+one:
+  CRN: 101
+  class_name: "Database Design"
+  professor: "Dr. Smith"
+  term: "Fall 2024"
+  credits: 3
+  class_time: "10:00:00"
+  end_time: "12:00:00"
+  major: "Computer Science"
+  status: "Open"
+  prerequisite: "None"
+
+two:
+  CRN: 102
+  class_name: "Operating Systems"
+  professor: "Dr. Small"
+  term: "Fall 2023"
+  credits: 3
+  class_time: "10:00:00"
+  end_time: "12:00:00"
+  major: "Computer Science"
+  status: "Open"
+  prerequisite: "Database Design"

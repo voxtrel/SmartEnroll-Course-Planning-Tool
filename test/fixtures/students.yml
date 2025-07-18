@@ -1,0 +1,16 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  email: "one@student.com"
+  name: "Student One"
+  credits_earned: 60
+  password_digest: <%= BCrypt::Password.create("password") %>
+  major: "Computer Science"
+
+two:
+  email: "two@student.com"
+  name: "Student Two"
+  credits_earned: 100
+  password_digest: <%= BCrypt::Password.create("secret") %>
+  major: "Computer Science"
+

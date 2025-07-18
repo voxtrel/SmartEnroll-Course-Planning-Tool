@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - Manage Courses</title>
+
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+
+  <%= stylesheet_link_tag 'application', media: 'all' %>
+  <%= javascript_include_tag 'application' %>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    html, body {
+      overflow-x: hidden;
+      max-width: 100%;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      text-align: center;
+    }
+
+    .top-banner, .bottom-banner {
+      background-color: #004B2D;
+      width: 100%;
+      height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      position: fixed;
+      left: 0;
+      z-index: 1000;
+    }
+
+    .top-banner {
+      top: 0;
+    }
+
+    .bottom-banner {
+      bottom: 0;
+    }
+
+    .banner-text {
+      color: white;
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .top-right {
+      display: flex;
+      align-items: center;
+    }
+
+    .logo {
+      height: 80px;
+      margin-right: 35px;
+    }
+
+    .logout-container {
+      position: absolute;
+      top: 110px;
+      right: 20px;
+    }
+
+    .logout-button {
+      background-color: #006747;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 5px;
+      text-decoration: none;
+    }
+
+    .logout-button:hover {
+      background-color: #004d00;
+    }
+
+    .content-container {
+      flex-grow: 1;
+      width: 100%;
+      margin-top: 140px; 
+      margin-bottom: 120px;  
+      padding: 20px;
+    }
+
+    .button-container-top {
+      margin-bottom: 20px;
+    }
+
+    .green-button {
+      background: #006747;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      text-decoration: none;
+      font-size: 16px;
+      margin: 0 5px;
+    }
+
+    .green-button:hover {
+      background: #003F26;
+    }
+
+    .header {
+      background-color: #004B2D;
+      color: white;
+      padding: 20px;
+      margin-bottom: 30px;
+      width: 100%;
+    }
+
+    .table-container {
+      width: 100%;
+      max-height: calc(100vh - 300px);
+      overflow-y: auto;
+    }
+
+    .courses-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0 auto;
+      background: white;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .courses-table th, .courses-table td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    .courses-table th {
+      background-color: #004B2D;
+      color: white;
+    }
+
+    .action-buttons-container {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .action-button {
+      display: block;
+      width: 100%;
+      flex: 1;
+      margin: 0;
+      padding: 10px 0;
+      color: white;
+      border: none;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .action-button.edit {
+      background-color: #4CAF50;
+    }
+
+    .action-button.delete {
+      background-color: #f44336;
+    }
+
+    .action-button:hover {
+      opacity: 0.8;
+    }
+  </style>
+</head>
+<body>
+  <!-- Top Banner -->
+  <div class="top-banner">
+    <span class="banner-text">ADMIN DASHBOARD</span>
+    <div class="top-right">
+      <img src="<%= asset_path('LogoWithCircle.png') %>" alt="Logo" class="logo">
+    </div>
+  </div>
+
+  <!-- Logout Button -->
+  <div class="logout-container">
+    <%= button_to "Log Out", logout_path, method: :delete, class: "logout-button" %>
+  </div>
+
+  <!-- Main Content -->
+  <div class="content-container">
+    <!-- Add New Course Button Below the Top Banner -->
+    <div class="button-container-top">
+      <%= link_to "Add New Course", new_course_path, class: "green-button" %>
+    </div>
+
+    <h1 class="header">Admin Dashboard - Manage Courses</h1>
+
+    <!-- Table Container with reduced height -->
+    <div class="table-container">
+      <table class="courses-table">
+        <thead>
+          <tr>
+            <th>CRN</th>
+            <th>Course Name</th>
+            <th>Professor</th>
+            <th>Term</th>
+            <th>Class Time</th>
+            <th>End Time</th>
+            <th>Credits</th>
+            <th>Major</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @courses.each do |course| %>
+            <tr>
+              <td><%= course.CRN %></td>
+              <td><%= course.class_name %></td>
+              <td><%= course.professor %></td>
+              <td><%= course.term %></td>
+              <td>
+                <%= course.class_time.present? ? (course.class_time.respond_to?(:strftime) ? course.class_time.strftime("%I:%M %p") : course.class_time) : "N/A" %>
+              </td>
+              <td>
+                <%= course.end_time.present? ? (course.end_time.respond_to?(:strftime) ? course.end_time.strftime("%I:%M %p") : course.end_time) : "N/A" %>
+              </td>
+              <td><%= course.credits %></td>
+              <td><%= course.major.present? ? course.major : "N/A" %></td>
+              <td><%= course.status.present? ? course.status : "N/A" %></td>
+              <td>
+                <div class="action-buttons-container">
+                <%= button_to "Edit", edit_course_path(course),
+                method: :get,
+                class: "action-button edit" %>
+          <%= button_to "Delete", course_path(course),
+                method: :delete,
+                data: { confirm: "Are you sure?" },
+                class: "action-button delete" %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Bottom Banner -->
+  <div class="bottom-banner"></div>
+</body>
+</html>

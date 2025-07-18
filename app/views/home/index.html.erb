@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            justify-content: space-between;
+        }
+
+        .top-banner, .bottom-banner {
+            background-color: #004B2D;
+            width: 100%;
+            height: 100px; 
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            position: fixed;
+            left: 0;
+            z-index: 1000;
+        }
+
+        .top-banner {
+            top: 0;
+        }
+
+        .bottom-banner {
+            bottom: 0;
+        }
+
+        .banner-text {
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .logo {
+            height: 80px; 
+            margin-right: 35px; 
+        }
+    
+
+        .login-container {
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 600px;
+            text-align: center;
+            border: 5px solid #006747;
+            margin: auto;
+            margin-top: 140px;
+        }
+
+        .login-header {
+            font-size: 22px;
+            font-weight: bold;
+            color: #006747;
+            margin-bottom: 20px;
+        }
+
+        .input-container {
+            margin: 15px 0;
+            text-align: left;
+        }
+
+        .input-container label {
+            font-size: 18px;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+            color: #006747;
+        }
+
+        .input-container input {
+            width: 95%;
+            padding: 12px;
+            border: 2px solid #006747;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .login-button {
+            background: #006747;
+            color: white;
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .login-button:hover {
+            background: #004d00;
+        }
+
+        .signup-container {
+            margin-top: 20px;
+        }
+
+        .signup-button {
+            background: white;
+            color: #006747;
+            width: 96%;
+            padding: 10px;
+            border: 2px solid #006747;
+            border-radius: 5px;
+            font-size: 18px;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .signup-button:hover {
+            background: #f4f4f4;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="top-banner">
+        <span class="banner-text">WELCOME TO SMART ENROLL</span>
+        <img src="<%= asset_path('LogoWithCircle.png') %>" alt="Logo" class="logo">
+    </div>
+
+    <div class="login-container">
+    <% if flash[:alert] %>
+        <div style="color: red; font-weight: bold; margin-bottom: 10px;">
+            <%= flash[:alert] %>
+        </div>
+    <% end %>
+
+    <div class="login-header">Log in</div>
+    <form action="<%= login_path %>" method="POST">
+        <div class="input-container">
+            <label for="email">Student Email:</label>
+            <input type="email" id="email" name="email" placeholder="Enter Your Email" required>
+        </div>
+        <div class="input-container">
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" placeholder="Enter Your Password" required>
+        </div>
+        <button type="submit" class="login-button">Login</button>
+    </form>
+
+    <div class="signup-container">
+        <%= link_to 'Sign Up', new_student_path, class: 'signup-button' %>
+    </div>
+</div>
+
+
+    <div class="bottom-banner"></div>
+</body>
+</html>

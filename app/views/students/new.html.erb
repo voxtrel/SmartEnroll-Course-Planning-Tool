@@ -1,0 +1,156 @@
+<h1>Sign Up</h1>
+
+<div class="signup-container">
+  <h2 class="form-header">Create Your Account</h2>
+  
+  <div class="form-box">
+    <% if @student.errors.any? %>
+      <div class="error-messages">
+        <h2><%= pluralize(@student.errors.count, "error") %> prevented sign-up:</h2>
+        <ul>
+          <% @student.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <%= form_for @student, data: { turbo: false } do |f| %>
+      <div class="input-field">
+        <%= f.label :name, "Full Name" %>
+        <%= f.text_field :name, class: "input-box", placeholder: "Enter your full name" %>
+      </div>
+
+      <div class="input-field">
+        <%= f.label :email, "Email Address" %>
+        <%= f.email_field :email, class: "input-box", placeholder: "Enter your email" %>
+      </div>
+
+      <div class="input-field" style="margin-bottom: 15px;">
+        <%= f.label :major, "Major" %>
+        <%= f.select :major, [
+          "Computer Science", "Information Technology", "Software Engineering", 
+          "Electrical Engineering", "Mechanical Engineering", "Civil Engineering",
+          "Business Administration", "Finance", "Biology", "Chemistry", "Mathematics", 
+          "Physics", "Psychology", "Political Science", "English", "History"
+        ], { prompt: "Select your major" }, class: "input-box" %>
+      </div>
+
+      <div class="input-field">
+        <%= f.label :password, "Password" %>
+        <%= f.password_field :password, class: "input-box", placeholder: "Enter your password" %>
+      </div>
+
+      <div class="input-field">
+        <%= f.label :password_confirmation, "Confirm Password" %>
+        <%= f.password_field :password_confirmation, class: "input-box", placeholder: "Re-enter your password" %>
+      </div>
+
+      <div class="button-container">
+        <%= f.submit "Sign Up", class: "submit-btn" %>
+      </div>
+    <% end %>
+
+    <div class="button-container">
+      <%= link_to "Back to Login", root_path, class: "submit-btn", method: :get %>
+    </div>
+  </div>
+</div>
+
+<style>
+  body {
+    background-color: #004B2D;
+    color: white;
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+  }
+
+  .signup-container {
+    background: white;
+    color: black;
+    padding: 30px;
+    border-radius: 10px;
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  .form-header {
+    color: #004B2D;
+    font-size: 22px;
+    margin-bottom: 15px;
+  }
+
+  .form-box {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  h1 {
+    color: white;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .input-field {
+    text-align: left;
+  }
+
+  .input-field label {
+    font-weight: bold;
+    color: #004B2D;
+    display: block;
+    margin-bottom: 5px;
+  }
+
+  .input-box {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-top: 5px;
+  }
+
+  .button-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  .submit-btn {
+    background: #004B2D;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    font-size: 16px;
+    display: inline-block;
+    text-align: center;
+    text-decoration: none;
+  }
+
+  .submit-btn:hover {
+    background: #003F26;
+  }
+
+  .error-messages {
+    background: #ffcccc;
+    color: #900;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    text-align: left;
+  }
+
+  .error-messages ul {
+    padding-left: 20px;
+  }
+</style>

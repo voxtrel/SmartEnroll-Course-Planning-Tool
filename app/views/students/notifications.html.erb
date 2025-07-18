@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notifications</title>
+
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+
+  <%= stylesheet_link_tag 'application', media: 'all' %>
+  <%= javascript_include_tag 'application' %>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      text-align: center;
+      overflow-y: auto; 
+    }
+
+    .top-banner, .bottom-banner {
+      background-color: #004B2D;
+      width: 100%;
+      height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      position: fixed;
+      left: 0;
+      z-index: 1000;
+    }
+
+    .top-banner { top: 0; }
+    .bottom-banner { bottom: 0; }
+
+    .banner-text {
+      color: white;
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .top-right {
+      display: flex;
+      align-items: center;
+    }
+
+    .logo {
+      height: 80px;
+      margin-right: 35px;
+    }
+
+    .logout-container {
+      position: absolute;
+      top: 110px;
+      right: 20px;
+    }
+
+    .logout-button {
+      background-color: #006747;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 5px;
+      text-decoration: none;
+    }
+
+    .logout-button:hover {
+      background-color: #004d00;
+    }
+
+  
+    .content-container {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      margin-top: 140px;  
+      margin-bottom: 120px;  
+      width: 100%;
+      padding: 20px;
+    }
+
+   
+    .header {
+      background-color: #004B2D;
+      color: white;
+      padding: 20px;
+      margin-bottom: 30px;
+      width: 100%;
+    }
+
+    .notifications-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 30px;
+      width: 100%;
+      max-height: calc(100vh - 250px); 
+      overflow-y: auto;  
+    }
+
+    .notification-card {
+      background-color: white;
+      border-left: 5px solid #004B2D;
+      padding: 20px;
+      width: 80%;
+      max-width: 600px;
+      border-radius: 8px;
+      text-align: left;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+
+    .notification-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      margin-bottom: 10px;
+    }
+
+    .notification-header h2 {
+      margin: 0;
+      font-size: 1.2em;
+      color: #004B2D;
+    }
+
+    .notification-card p {
+      margin: 0 0 10px;
+    }
+
+    .timestamp {
+      font-size: 0.9em;
+      color: gray;
+    }
+
+    .clear-button {
+      background-color: #d9534f;
+      color: white;
+      border: none;
+      padding: 6px 10px;
+      cursor: pointer;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    .clear-button:hover {
+      background-color: #c9302c;
+    }
+
+    .empty-message {
+      color: gray;
+      font-style: italic;
+      margin-top: 20px;
+    }
+    .clear-all-container {
+    position: absolute;
+    top: 110px;  
+    left: 20px;
+    z-index: 1000;
+  }
+
+    /* Fixed Back to Dashboard button on the left, above the bottom banner */
+    .back-button {
+      position: fixed;
+      bottom: 120px;
+      left: 20px;
+      background-color: #004B2D;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      text-decoration: none;
+      font-size: 16px;
+      z-index: 1100;
+    }
+
+    .back-button:hover {
+      background-color: #003F26;
+    }
+  </style>
+  </head>
+<body>
+  <!-- Top Banner -->
+  <div class="top-banner">
+    <span class="banner-text">WELCOME TO YOUR DASHBOARD</span>
+    <div class="top-right">
+      <img src="<%= asset_path('LogoWithCircle.png') %>" alt="Logo" class="logo">
+    </div>
+  </div>
+
+  <!-- Clear All Button (top-left) -->
+  <div class="clear-all-container">
+    <%= button_to "Clear All",
+          clear_all_notifications_path,
+          method: :delete,
+          data: { confirm: "Are you sure you want to delete ALL notifications?" },
+          class: "clear-button" %>
+  </div>
+
+  <!-- Logout Button (top-right) -->
+  <div class="logout-container">
+    <%= button_to "Logout", logout_path, method: :delete, class: "logout-button" %>
+  </div>
+
+  <!-- Main Content -->
+  <div class="content-container">
+    <h1 class="header">Notifications</h1>
+
+    <div class="notifications-container">
+      <% if @notifications.any? %>
+        <% @notifications.each do |notification| %>
+          <div class="notification-card">
+            <div class="notification-header">
+              <h2>Notification</h2>
+              <%= button_to "Clear",
+                    notification_path(notification),
+                    method: :delete,
+                    data: { confirm: "Delete this one?" },
+                    class: "clear-button" %>
+            </div>
+            <p><%= notification.message %></p>
+            <span class="timestamp">
+              <%= notification.created_at
+                     .in_time_zone('Eastern Time (US & Canada)')
+                     .strftime("%B %d, %Y at %I:%M %p") %>
+            </span>
+          </div>
+        <% end %>
+      <% else %>
+        <p class="empty-message">🎉 You have no notifications at this time.</p>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Back to Dashboard -->
+  <%= link_to "Back to Dashboard", dashboard_path, class: "back-button" %>
+
+  <!-- Bottom Banner -->
+  <div class="bottom-banner"></div>
+</body>
+</html>

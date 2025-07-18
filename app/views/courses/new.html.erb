@@ -1,0 +1,211 @@
+<!-- app/views/courses/new.html.erb -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Add New Course</title>
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+  <%= stylesheet_link_tag 'application', media: 'all' %>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      color: #000;
+    }
+    .content-container {
+      max-width: 1200px;
+      margin: 20px auto;
+      background: #fff;
+      padding: 40px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      max-height: calc(100vh - 40px);
+      overflow-y: auto;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 2em;
+    }
+    #error_explanation {
+      border: 1px solid #fcc2c3;
+      background: #fcebea;
+      color: #f44336;
+      padding: 10px;
+      margin-bottom: 20px;
+      border-radius: 4px;
+    }
+    #error_explanation h2 { margin-top: 0; font-size: 1.2em; }
+    #error_explanation ul { list-style-type: none; padding-left: 0; }
+    .form-group {
+      margin-bottom: 20px;
+      text-align: left;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+      color: #000;
+    }
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 10px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      transition: border-color 0.3s ease;
+    }
+    .form-group input:focus,
+    .form-group select:focus {
+      border-color: #004B2D;
+      outline: none;
+    }
+    .form-row { display: flex; gap: 20px; }
+    .form-row.spacious { gap: 40px; }
+    .form-row .form-group { flex: 1; }
+    /* Days checkboxes */
+    .days-label {
+      font-weight: bold;
+      margin-bottom: 8px;
+      color: #000;
+    }
+    .days-row {
+      display: flex;
+      gap: 30px;
+      margin-bottom: 20px;
+    }
+    .days-row label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: normal;
+      color: #000;
+      cursor: pointer;
+    }
+    .days-row input[type="checkbox"] { margin: 0; cursor: pointer; }
+    .green-button {
+      background: #004B2D;
+      color: #fff;
+      padding: 12px 25px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      text-decoration: none;
+      font-size: 16px;
+      transition: background 0.3s ease;
+      display: inline-block;
+      margin-top: 10px;
+    }
+    .green-button:hover { background: #003F26; }
+    a.green-button { text-align: center; margin-top: 20px; display: inline-block; }
+  </style>
+</head>
+<body>
+  <div class="content-container">
+    <h1>Add New Course</h1>
+    <% if @course.errors.any? %>
+      <div id="error_explanation">
+        <h2><%= pluralize(@course.errors.count, "error") %> prohibited this course from being saved:</h2>
+        <ul>
+          <% @course.errors.full_messages.each do |msg| %>
+            <li><%= msg %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <%= form_with model: @course, local: true, html: { id: 'new_course_form' } do |f| %>
+      <!-- CRN -->
+      <div class="form-group">
+        <%= f.label :CRN, "CRN" %>
+        <%= f.number_field :CRN %>
+      </div>
+      <!-- Name & Professor -->
+      <div class="form-row spacious">
+        <div class="form-group">
+          <%= f.label :class_name, "Course Name" %>
+          <%= f.text_field :class_name %>
+        </div>
+        <div class="form-group">
+          <%= f.label :professor, "Professor" %>
+          <%= f.text_field :professor %>
+        </div>
+      </div>
+      <!-- Term & Credits -->
+      <div class="form-row">
+        <div class="form-group">
+          <%= f.label :term, "Term" %>
+          <%= f.select :term, options_for_select(@dropdown_terms, @course.term) %>
+        </div>
+        <div class="form-group">
+          <%= f.label :credits, "Credits" %>
+          <%= f.number_field :credits %>
+        </div>
+      </div>
+      <!-- Major -->
+      <div class="form-group">
+        <%= f.label :major, "Major" %>
+        <%= f.select :major, [
+          "Computer Science", "Information Technology", "Software Engineering",
+          "Electrical Engineering", "Mechanical Engineering", "Civil Engineering",
+          "Business Administration", "Finance", "Biology", "Chemistry", "Mathematics",
+          "Physics", "Psychology", "Political Science", "English", "History"
+        ], { selected: @course.major } %>
+      </div>
+      <!-- Status -->
+      <div class="form-group">
+        <%= f.label :status, "Status" %>
+        <%= f.select :status, options_for_select(["Open","Closed","Waitlist"], @course.status) %>
+      </div>
+      <!-- Capacity -->
+      <div class="form-group">
+        <%= f.label :capacity, "Capacity" %>
+        <%= f.number_field :capacity %>
+      </div>
+      <!-- Times & Prereq -->
+      <div class="form-row spacious">
+        <div class="form-group">
+          <%= f.label :class_time, "Class Time" %>
+          <%= f.text_field :class_time %>
+        </div>
+        <div class="form-group">
+          <%= f.label :end_time, "End Time" %>
+          <%= f.text_field :end_time %>
+        </div>
+        <div class="form-group">
+          <%= f.label :prerequisite, "Prerequisite" %>
+          <%= f.text_field :prerequisite, id: 'course_prerequisite' %>
+        </div>
+      </div>
+      <!-- Days of Week -->
+      <div class="form-group">
+        <label class="days-label">Days of the Week</label>
+        <div class="days-row">
+          <label>Mon <%= f.check_box :mon %></label>
+          <label>Tue <%= f.check_box :tue %></label>
+          <label>Wed <%= f.check_box :wed %></label>
+          <label>Thu <%= f.check_box :thu %></label>
+          <label>Fri <%= f.check_box :fri %></label>
+        </div>
+      </div>
+      <div>
+        <%= f.submit "Create Course", class: "green-button" %>
+      </div>
+    <% end %>
+    <%= link_to "Back to Dashboard", admin_dashboard_path, class: "green-button" %>
+  </div>
+
+  <script>
+    document.getElementById('new_course_form').addEventListener('submit', function(e) {
+      var prereq = document.getElementById('course_prerequisite');
+      if (prereq && prereq.value.trim() === '') {
+        prereq.value = 'None';
+      }
+    });
+  </script>
+</body>
+</html>

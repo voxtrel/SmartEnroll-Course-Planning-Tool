@@ -1,0 +1,9 @@
+one:
+  student: one
+  course_id: 101
+  status: "Planned"
+
+two:
+  student: two
+  course_id: 102
+  status: "Planned"

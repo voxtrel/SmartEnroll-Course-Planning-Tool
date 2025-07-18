@@ -1,0 +1,89 @@
+/* Full-page layout */
+body {
+    background-color: #0B3D02; /* Dark green */
+    font-family: Arial, sans-serif;
+    height: 100vh;
+    margin: 0;
+    display: flex;
+    flex-direction: column; /* Ensures vertical stacking */
+    align-items: center; /* Centers content horizontally */
+    justify-content: center; /* Centers content vertically */
+    position: relative;
+}
+
+.header {
+    position: absolute;
+    top: 20px;
+    left: 40px;
+    font-family: "Georgia", serif;
+    font-size: 23px;
+    font-weight: bold;
+    color: white;
+    width: 100%; /* Make header take full width */
+    display: flex;
+    justify-content: space-between; /* Push text left and logo right */
+    align-items: center;
+    padding: 0 40px; /* Adjust padding for spacing */
+}
+
+/* Sign-Up Box Centered */
+.form-container {
+    background-color: #1D5B20; /* Slightly lighter green */
+    padding: 30px;
+    border-radius: 8px;
+    width: 400px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+/* Form Title */
+h2 {
+    color: white;
+}
+
+/* Labels */
+label {
+    color: white;
+    font-size: 16px;
+    display: block;
+    text-align: left;
+    margin-bottom: 5px;
+}
+
+/* Input Fields */
+input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: none;
+    border-radius: 5px;
+}
+
+/* Submit Button */
+button {
+    width: 100%;
+    padding: 10px;
+    background-color: #A0C49D;
+    border: none;
+    color: white;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #6A8E69;
+}
+
+
+.logo {
+    width: 70px; 
+    height: auto;
+    position: static; /* Remove absolute positioning */
+}
+
+/* Login Text */
+.login-text {
+    color: blue;
+    cursor: pointer;
+}

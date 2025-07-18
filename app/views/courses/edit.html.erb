@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Edit Course</title>
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+  <%= stylesheet_link_tag 'application', media: 'all' %>
+  <style>
+    /* Global styles */
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      color: #000;
+    }
+    .content-container {
+      max-width: 1200px;
+      /* reduced margins for better viewport fit */
+      margin: 20px auto;
+      background: #fff;
+      padding: 40px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      /* enable scrolling within container */
+      max-height: calc(100vh - 40px);
+      overflow-y: auto;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 2em;
+    }
+    .form-group {
+      margin-bottom: 20px;
+      text-align: left;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+      color: #000;
+    }
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 10px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      transition: border-color 0.3s ease;
+    }
+    .form-group input:focus,
+    .form-group select:focus {
+      border-color: #004B2D;
+      outline: none;
+    }
+    .form-row {
+      display: flex;
+      gap: 20px;
+    }
+    .form-row.spacious {
+      gap: 40px;
+    }
+    .form-row .form-group {
+      flex: 1;
+    }
+    /* Days checkboxes */
+    .days-label {
+      font-weight: bold;
+      margin-bottom: 8px;
+      color: #000;
+    }
+    .days-row {
+      display: flex;
+      gap: 30px;
+      margin-bottom: 20px;
+    }
+    .days-row label {
+      display: inline-flex;
+      align-items: center;
+      font-weight: normal;
+      color: #000;
+      cursor: pointer;
+      gap: 8px;
+    }
+    .days-row input[type="checkbox"] {
+      margin: 0;
+      cursor: pointer;
+    }
+    .green-button {
+      background: #004B2D;
+      color: #fff;
+      padding: 12px 25px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      text-decoration: none;
+      font-size: 16px;
+      transition: background 0.3s ease;
+      display: inline-block;
+      margin-top: 10px;
+    }
+    .green-button:hover {
+      background: #003F26;
+    }
+    .error_messages {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+      padding: 10px;
+      margin-bottom: 20px;
+      border-radius: 4px;
+    }
+    .error_messages ul {
+      list-style: none;
+      padding: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="content-container">
+    <h1>Edit Course</h1>
+    <% if @course.errors.any? %>
+      <div class="error_messages">
+        <h2><%= pluralize(@course.errors.count, "error") %> prevented this course from being saved:</h2>
+        <ul>
+          <% @course.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+    <%= form_with model: @course, local: true, data: { turbo: false } do |f| %>
+      <div class="form-row spacious">
+        <div class="form-group">
+          <%= f.label :class_name, "Course Name" %>
+          <%= f.text_field :class_name %>
+        </div>
+        <div class="form-group">
+          <%= f.label :professor, "Professor" %>
+          <%= f.text_field :professor %>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <%= f.label :term, "Term" %>
+          <%= f.select :term, options_for_select(@dropdown_terms, @course.term), {}, { id: "term-dropdown", onchange: "this.form.submit()" } %>
+        </div>
+        <div class="form-group">
+          <%= f.label :credits, "Credits" %>
+          <%= f.number_field :credits %>
+        </div>
+      </div>
+      <div class="form-group">
+        <%= f.label :major, "Major" %>
+        <%= f.select :major, [
+          "Computer Science", "Information Technology", "Software Engineering",
+          "Electrical Engineering", "Mechanical Engineering", "Civil Engineering",
+          "Business Administration", "Finance", "Biology", "Chemistry", "Mathematics",
+          "Physics", "Psychology", "Political Science", "English", "History"
+        ], { selected: @course.major }, { class: "input-box" } %>
+      </div>
+      <div class="form-group">
+        <%= f.label :status, "Status" %>
+        <%= f.select :status, options_for_select(["Open", "Closed", "Waitlist"], @course.status) %>
+      </div>
+      <div class="form-group">
+        <%= f.label :capacity, "Capacity" %>
+        <%= f.number_field :capacity %>
+      </div>
+      <div class="form-row spacious">
+        <div class="form-group">
+          <%= f.label :class_time, "Class Time" %>
+          <%= f.text_field :class_time %>
+        </div>
+        <div class="form-group">
+          <%= f.label :end_time, "End Time" %>
+          <%= f.text_field :end_time %>
+        </div>
+        <div class="form-group">
+          <%= f.label :prerequisite, "Prerequisite" %>
+          <%= f.text_field :prerequisite %>
+        </div>
+      </div>
+      <!-- Days of the Week -->
+      <div class="form-group">
+        <label class="days-label">Days of the Week</label>
+        <div class="days-row">
+          <label>Mon <%= f.check_box :mon %></label>
+          <label>Tue <%= f.check_box :tue %></label>
+          <label>Wed <%= f.check_box :wed %></label>
+          <label>Thu <%= f.check_box :thu %></label>
+          <label>Fri <%= f.check_box :fri %></label>
+        </div>
+      </div>
+      <div>
+        <%= f.submit "Update Course", class: "green-button", onclick: "return confirm('Are you sure?')" %>
+      </div>
+    <% end %>
+    <%= link_to "Back to Dashboard", admin_dashboard_path, class: "green-button" %>
+  </div>
+</body>
+</html>

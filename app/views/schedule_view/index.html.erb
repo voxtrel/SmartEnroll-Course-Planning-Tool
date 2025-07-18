@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Student Course Schedule</title>
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+
+  <%= stylesheet_link_tag 'application', media: 'all' %>
+  <%= javascript_include_tag 'application' %>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      overflow-x: hidden;
+      font-family: Arial, sans-serif;
+    }
+    body {
+      background-color: #ffffff;
+      color: black; 
+    }
+    .top-banner {
+      background-color: #004B2D;
+      width: 100%;
+      height: 100px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+    }
+    .top-banner img {
+      width: 80px;
+    }
+    .top-banner h2 {
+      margin: 0;
+      font-size: 28px; 
+      color: white;
+    }
+    .top-banner form {
+      margin: 0;
+    }
+    .top-banner select {
+      font-size: 14px;
+      padding: 4px;
+    }
+    .bottom-banner {
+      background-color: #004B2D;
+      width: 100%;
+      height: 100px;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      z-index: 1000;
+      display: flex;
+      align-items: center; 
+      padding-left: 20px; 
+    }
+    
+    .back-button {
+      background-color: #006747;
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      font-size: 14px;
+      border-radius: 5px;
+      cursor: pointer;
+      text-decoration: none;
+      width: auto;      
+      display: inline-block;
+    }
+    
+    .back-button:hover {
+      background-color: #004d00;
+    }
+
+    .content-container {
+      position: fixed;
+      top: 100px;    
+      bottom: 100px; 
+      left: 0;
+      right: 0;
+      padding: 20px;
+      overflow-y: auto;
+    }
+    .course-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 15px;
+      align-items: start;
+      margin-top: 20px;
+    }
+    .course-card {
+      background: #f4f4f4;
+      color: black;
+      border-radius: 10px;
+      padding: 12px;
+      font-weight: bold;
+      position: relative;
+      height: 280px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      text-align: center;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease-in-out;
+    }
+    .course-card:hover {
+      transform: scale(1.05);
+    }
+    .course-card table td,
+    .course-card table th {
+      font-size: 15px;
+    }
+    .unenroll-container {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+    }
+
+    .legend {
+      display: inline-block;
+      background: white;
+      padding: 8px 12px;
+      border-radius: 5px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+    .legend p { margin: 4px 0; font-size: 14px; color: #333; }
+    .legend-box { display: inline-block; width: 12px; height: 12px; margin-right: 6px; vertical-align: middle; border-radius: 2px; }
+    .legend-box.open       { background-color: green;  }
+    .legend-box.closed     { background-color: red;    }
+    .legend-box.waitlisted { background-color: yellow; }
+    .legend-box.conflict   { background-color: orange; }
+
+    .unenroll-button {
+      background-color: #ff4d4d;
+      color: white;
+      border: none;
+      padding: 10px;
+      font-size: 14px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    .unenroll-button:hover {
+      background-color: #cc0000;
+    }
+    .add-button {
+      background: #f4f4f4;
+      color: black;
+      border-radius: 10px;
+      padding: 12px;
+      font-size: 24px;
+      text-align: center;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid #ddd;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      height: 280px;
+      position: relative;
+      z-index: 1200;
+    }
+    .add-button:hover {
+      transform: scale(1.05);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    td, th {
+      padding: 4px;
+      text-align: left;
+      vertical-align: middle;
+      color: #333;
+      font-weight: normal;
+    }
+    th {
+      font-weight: bold;
+      color: #333;
+    }
+    .invisible-table th,
+    .invisible-table td {
+      border: none;
+    }
+    @media (max-width: 768px) {
+      .course-container {
+        grid-template-columns: 1fr;
+      }
+      .course-card,
+      .add-button {
+        height: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Top Banner -->
+  <div class="top-banner">
+    <img src="<%= asset_path('LogoWithCircle.png') %>" alt="USF Logo">
+    <h2>
+      Student Course Schedule for
+      <span style="color: yellow;"><%= @term %></span>
+    </h2>
+    <form action="<%= request.path %>" method="get" class="term-dropdown-form">
+      <select name="term" id="term-dropdown" onchange="this.form.submit()">
+        <% @dropdown_terms.each do |term| %>
+          <option value="<%= term %>" <%= 'selected' if term == @term %>>
+            <%= term %>
+          </option>
+        <% end %>
+      </select>
+    </form>
+  </div>
+
+
+
+  <!-- Main Content Container (fixed between banners) -->
+  <div class="content-container">
+   <!-- Status Legend -->
+   <div class="legend">
+      <span><strong>Status Legend:</strong></span>
+      <span><span class="legend-box open"></span>Open</span>
+      <span><span class="legend-box closed"></span>Closed</span>
+      <span><span class="legend-box waitlisted"></span>Waitlisted</span>
+      <span><span class="legend-box conflict"></span>Time Conflict</span>
+    </div>
+    <% if @user_schedules.empty? %>
+      <p style="font-weight: bold;">No courses enrolled for <%= @term %>.</p>
+    <% end %>
+    
+    <!-- Always render the course container so the Add button is visible -->
+    <div class="course-container">
+      <% @user_schedules.each do |schedule| %>
+        <% course = schedule.course %>
+        <% border_color = case course.status
+             when "Closed" then "red"
+             when "Open" then "green"
+             when "Waitlist" then "yellow"
+             else "#ddd"
+           end %>
+       <%# build an array of day abbreviations %>
+<% days = [] %>
+<% days << "Mon" if course.mon %>
+<% days << "Tue" if course.tue %>
+<% days << "Wed" if course.wed %>
+<% days << "Thu" if course.thu %>
+<% days << "Fri" if course.fri %>
+
+<div class="course-card"
+     style="border: 3px solid <%= border_color %>;"
+     data-start="<%= course.class_time.strftime('%H:%M') if course.class_time %>"
+     data-end  ="<%= course.end_time.strftime('%H:%M')   if course.end_time   %>"
+     data-days ="<%= days.join(',') %>">
+
+          <table class="invisible-table">
+            <tr>
+              <th>Course Name</th>
+              <td><%= course.class_name %></td>
+            </tr>
+            <tr>
+              <th>CRN</th>
+              <td><%= course.CRN %></td>
+            </tr>
+            <tr>
+              <th>Professor</th>
+              <td><%= course.professor %></td>
+            </tr>
+            <tr>
+              <th>Credits</th>
+              <td><%= course.credits %></td>
+            </tr>
+            <tr>
+              <th>Start Time</th>
+              <td>
+                <%= course.class_time.strftime("%I:%M %p") if course.class_time.present? %>
+              </td>
+            </tr>
+            <tr>
+              <th>End Time</th>
+              <td>
+                <%= course.end_time.strftime("%I:%M %p") if course.end_time.present? %>
+              </td>
+            </tr>
+            <tr>
+              <th>Days</th>
+              <td>
+                <% days = [] %>
+                <% days << "Mon" if course.mon %>
+                <% days << "Tue" if course.tue %>
+                <% days << "Wed" if course.wed %>
+                <% days << "Thu" if course.thu %>
+                <% days << "Fri" if course.fri %>
+                <%= days.join(", ") %>
+              </td>
+            </tr>
+            <tr>
+              <th>Class Demand</th>
+              <td><%= "#{course.volume}/#{course.capacity}" %></td>
+            </tr>
+            <tr>
+              <th>Status</th>
+              <td><%= course.status %></td>
+            </tr>
+          </table>
+          <div class="unenroll-container">
+            <%= button_to "Drop", unenroll_course_path(course),
+                          method: :delete, class: "unenroll-button" %>
+          </div>
+        </div>
+      <% end %>
+      <!-- Add Button is always visible -->
+      <div class="add-button"
+           onclick="window.location.href='<%= courses_path(term: @term) %>';">
+        +
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Banner -->
+  <!-- Back Button on bottom left -->
+
+  <!-- Bottom Banner -->
+  <div class="bottom-banner">
+    <button class="back-button" onclick="window.location.href='<%= dashboard_path %>';">
+      ← Back
+    </button>
+  </div>
+  <script>
+  (function(){
+    // helper: HH:MM → minutes
+    function toMin(hhmm) {
+      if (!hhmm) return NaN;
+      const [h,m] = hhmm.split(':').map(Number);
+      return h*60 + m;
+    }
+
+    // conflict‑highlighting logic
+    function highlightConflicts(){
+      const cards = Array.from(document.querySelectorAll('.course-card'))
+        .map(el => ({
+          el,
+          days: el.dataset.days.split(','),
+          start: toMin(el.dataset.start),
+          end:   toMin(el.dataset.end),
+        }));
+
+      for (let i = 0; i < cards.length; i++) {
+        for (let j = i+1; j < cards.length; j++) {
+          const a = cards[i], b = cards[j];
+          if (a.days.some(d => b.days.includes(d))
+              && a.start < b.end && b.start < a.end) {
+            a.el.style.border = '3px solid orange';
+            b.el.style.border = '3px solid orange';
+          }
+        }
+      }
+    }
+
+    // run on first load and every Turbolinks/Turbo visit
+    document.addEventListener('DOMContentLoaded', highlightConflicts);
+    document.addEventListener('turbolinks:load',   highlightConflicts);
+    document.addEventListener('turbo:load',        highlightConflicts);
+  })();
+</script>
+</body>
+</html>

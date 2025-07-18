@@ -1,0 +1,26 @@
+<h1>Students</h1>
+<%= link_to 'New Student', new_student_path, class: 'btn btn-primary' %>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Email</th>
+      <th>Credits Earned</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @students.each do |student| %>
+      <tr>
+        <td><%= student.name %></td>
+        <td><%= student.email %></td>
+        <td><%= student.credits_earned %></td>
+        <td>
+          <%= link_to 'Show', student_path(student) %> |
+          <%= link_to 'Edit', edit_student_path(student) %> |
+          <%= link_to 'Delete', student, method: :delete, data: { confirm: 'Are you sure?' } %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

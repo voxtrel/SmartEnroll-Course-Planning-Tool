@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard</title>
+
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+
+  <%= stylesheet_link_tag 'application', media: 'all' %>
+  <%= javascript_include_tag 'application' %>
+
+  <style>
+    /* ================= Original Layout Styles ================= */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+   
+    .container {
+      width: 100%;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+    
+    .top-banner, .bottom-banner {
+      background-color: #004B2D;
+      width: 100%;
+      height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 20px;
+      position: fixed;
+      left: 0;
+      z-index: 1000;
+    }
+    .top-banner {
+      top: 0;
+    }
+    .bottom-banner {
+      bottom: 0;
+    }
+    .banner-text {
+      color: white;
+      font-size: 24px;
+      font-weight: bold;
+      text-align: center;
+      width: 100%;
+    }
+    .logo-container {
+      position: absolute;
+      right: 60px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 1100;
+    }
+    .logo {
+      height: 80px;
+    }
+    .background-image {
+      position: absolute;
+      top: 100px;   
+      bottom: 100px; 
+      left: 0;
+      right: 0;
+      background: url('<%= asset_path("circular_logo.png") %>') no-repeat center center;
+      background-size: cover;
+      opacity: 0.2;
+      z-index: 0;
+    }
+    .logout-container {
+      position: absolute;
+      top: 110px;
+      right: 20px;
+      z-index: 1100;
+    }
+    .logout-button {
+      background-color: #006747;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 5px;
+      text-decoration: none;
+    }
+    .logout-button:hover {
+      background-color: #004d00;
+    }
+    /* Dashboard Content above the background image */
+    .dashboard-container {
+      text-align: center;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      margin-top: 140px;
+      position: relative;
+      z-index: 1;
+    }
+    .welcome-text h2 {
+      color: #006747;
+      font-size: 24px;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+    .notification-status {
+      font-size: 18px;
+      color: #333;
+      margin-top: 10px;
+    }
+    .button-container {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 40px;
+    }
+    .green-button {
+      background-color: #006747;
+      color: white;
+      border: none;
+      padding: 20px;
+      font-size: 18px;
+      cursor: pointer;
+      border-radius: 5px;
+      width: 200px;
+      text-align: center;
+      text-decoration: none;
+    }
+    .green-button:hover {
+      background-color: #004d00;
+    }
+
+    /* ================= Flip Countdown Styles ================= */
+    /* Header text above the flip countdown */
+    .flip-countdown-header {
+      position: fixed;
+      top: 110px; /* Just below the top banner */
+      left: 20px;
+      z-index: 1100;
+      font-size: 24px;
+      color: #004B2D;
+    }
+    /* Container for the entire flip countdown – now positioned below the header */
+    .flip-countdown {
+      position: fixed;
+      top: 150px; /* Adjusted to sit below the header */
+      left: 20px;
+      z-index: 1100;
+      display: flex;
+      gap: 10px;
+    }
+    /* Each time unit (days, hours, minutes, seconds) */
+    .flip-unit {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .unit-label {
+      margin-top: 5px;
+      font-size: 14px;
+      color: #004B2D;
+    }
+    /* The flip card with 3D perspective */
+    .flip-card {
+      position: relative;
+      width: 60px;
+      height: 80px;
+      perspective: 600px;
+    }
+    /* Static faces of the card */
+    .card-face {
+      background-color: #004B2D;
+      color: white;
+      width: 100%;
+      height: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      font-weight: bold;
+      box-sizing: border-box;
+      overflow: hidden;
+    }
+    .card-face.top {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .card-face.bottom {
+      position: absolute;
+      bottom: 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    /* Panels used for the flip animation */
+    .flip-panel {
+      position: absolute;
+      left: 0;
+      width: 100%;
+      height: 50%;
+      background-color: #004B2D;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      font-weight: bold;
+      backface-visibility: hidden;
+      overflow: hidden;
+    }
+    .flip-panel.top-flip {
+      top: 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      transform-origin: center bottom;
+    }
+    .flip-panel.bottom-flip {
+      bottom: 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
+      transform-origin: center top;
+    }
+    /* Animation classes */
+    .flip-animate .top-flip {
+      animation: flipTop 0.5s forwards;
+    }
+    .flip-animate .bottom-flip {
+      animation: flipBottom 0.5s forwards;
+    }
+    @keyframes flipTop {
+      0% { transform: rotateX(0deg); }
+      100% { transform: rotateX(-90deg); }
+    }
+    @keyframes flipBottom {
+      0% { transform: rotateX(90deg); }
+      100% { transform: rotateX(0deg); }
+    }
+
+    .card-face.top,
+.flip-panel.top-flip {
+  display: none;
+}
+
+.card-face.bottom {
+  height: 100%; /* Use full height since top half is hidden */
+  border-top: none; /* Remove the unnecessary border */
+}
+
+.flip-card {
+  height: 80px; /* Ensure full height usage */
+}
+
+.flip-panel.bottom-flip {
+  height: 100%; /* Expand the animation panel to full height */
+}
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- Top Banner with left aligned logo and centered title -->
+    <div class="top-banner">
+      <div class="logo-container">
+        <%= image_tag 'LogoWithCircle.png', alt: 'Logo', class: 'logo' %>
+      </div>
+      <span class="banner-text">WELCOME TO YOUR DASHBOARD</span>
+    </div>
+
+    <!-- Header text above the flip countdown -->
+    <div class="flip-countdown-header">
+      Registration opens in:
+    </div>
+
+    <!-- New Flip Countdown with Card Layout -->
+    <div class="flip-countdown">
+      <!-- Days -->
+      <div class="flip-unit" data-unit="days">
+        <div class="flip-card">
+          <div class="card-face top" data-value="days-top">00</div>
+          <div class="card-face bottom" data-value="days-bottom">00</div>
+          <div class="flip-panel top-flip" data-value="days-top-flip"></div>
+          <div class="flip-panel bottom-flip" data-value="days-bottom-flip"></div>
+        </div>
+        <div class="unit-label">Days</div>
+      </div>
+      <!-- Hours -->
+      <div class="flip-unit" data-unit="hours">
+        <div class="flip-card">
+          <div class="card-face top" data-value="hours-top">00</div>
+          <div class="card-face bottom" data-value="hours-bottom">00</div>
+          <div class="flip-panel top-flip" data-value="hours-top-flip"></div>
+          <div class="flip-panel bottom-flip" data-value="hours-bottom-flip"></div>
+        </div>
+        <div class="unit-label">Hours</div>
+      </div>
+      <!-- Minutes -->
+      <div class="flip-unit" data-unit="minutes">
+        <div class="flip-card">
+          <div class="card-face top" data-value="minutes-top">00</div>
+          <div class="card-face bottom" data-value="minutes-bottom">00</div>
+          <div class="flip-panel top-flip" data-value="minutes-top-flip"></div>
+          <div class="flip-panel bottom-flip" data-value="minutes-bottom-flip"></div>
+        </div>
+        <div class="unit-label">Minutes</div>
+      </div>
+      <!-- Seconds -->
+      <div class="flip-unit" data-unit="seconds">
+        <div class="flip-card">
+          <div class="card-face top" data-value="seconds-top">00</div>
+          <div class="card-face bottom" data-value="seconds-bottom">00</div>
+          <div class="flip-panel top-flip" data-value="seconds-top-flip"></div>
+          <div class="flip-panel bottom-flip" data-value="seconds-bottom-flip"></div>
+        </div>
+        <div class="unit-label">Seconds</div>
+      </div>
+    </div>
+
+    <!-- Background Image covering area between banners -->
+    <div class="background-image"></div>
+
+    <!-- Logout Button -->
+    <div class="logout-container">
+      <%= button_to "Logout", logout_path, method: :delete, class: "logout-button" %>
+    </div>
+
+    <!-- Dashboard Content -->
+    <div class="dashboard-container">
+      <div class="welcome-text">
+        <h2>Welcome, <%= @student.name %>!</h2>
+      </div>
+      
+      <div class="notification-status">
+        You have <strong><%= @student.notifications.count %></strong> notifications.
+      </div>
+
+      <div class="button-container">
+        <%= link_to "Go to Schedule", schedule_view_index_path, class: "green-button" %>
+        <%= link_to "Profile", student_profile_path(@student), class: "green-button" %>
+        <%= link_to "Notifications (#{@student.notifications.count})", notifications_path, class: "green-button" %>
+      </div>
+    </div>
+
+    <!-- Bottom Banner -->
+    <div class="bottom-banner"></div>
+  </div>
+
+  <!-- ================= Flip Countdown JavaScript ================= -->
+  <script>
+    // Set the registration open time (update this to the actual registration date/time)
+    const registrationOpenTime = new Date('2025-05-01T09:00:00').getTime();
+
+    /**
+     * Update a single flip-card for the given unit with a flip animation.
+     * @param {string} unit - "days", "hours", "minutes", or "seconds"
+     * @param {string} current - The currently displayed value
+     * @param {string} next - The new value to flip to
+     */
+    function updateFlipCard(unit, current, next) {
+      const flipUnit = document.querySelector(`.flip-unit[data-unit='${unit}']`);
+      if (!flipUnit) return;
+
+      const top      = flipUnit.querySelector(`[data-value='${unit}-top']`);
+      const bottom   = flipUnit.querySelector(`[data-value='${unit}-bottom']`);
+      const topFlip  = flipUnit.querySelector(`[data-value='${unit}-top-flip']`);
+      const bottomFlip = flipUnit.querySelector(`[data-value='${unit}-bottom-flip']`);
+
+      // Only animate if the value is changing.
+      if (current === next) return;
+
+      // Set the current visible value on static faces.
+      top.textContent = current;
+      bottom.textContent = current;
+      
+      // Prepare the flip panels:
+      topFlip.textContent = current;
+      bottomFlip.textContent = next;
+      
+      // Restart animation (remove and re-add the animate class)
+      flipUnit.querySelector('.flip-card').classList.remove('flip-animate');
+      // Force reflow to restart the animation
+      void flipUnit.offsetWidth;
+      flipUnit.querySelector('.flip-card').classList.add('flip-animate');
+
+      // Once the animation completes, update the static faces to the new value.
+      setTimeout(() => {
+        top.textContent = next;
+        bottom.textContent = next;
+      }, 500); // Match the duration of the CSS animation
+    }
+
+    function updateCountdown() {
+      const now = new Date().getTime();
+      let remaining = registrationOpenTime - now;
+
+      if (remaining < 0) {
+        // Registration is open; set all values to "00" or display "OPEN"
+        updateFlipCard("days",    document.querySelector("[data-value='days-top']").textContent,    "00");
+        updateFlipCard("hours",   document.querySelector("[data-value='hours-top']").textContent,   "00");
+        updateFlipCard("minutes", document.querySelector("[data-value='minutes-top']").textContent, "00");
+        updateFlipCard("seconds", document.querySelector("[data-value='seconds-top']").textContent, "00");
+        return;
+      }
+
+      // Calculate time remaining
+      const days = Math.floor(remaining / (1000 * 60 * 60 * 24));
+      remaining %= 1000 * 60 * 60 * 24;
+      const hours = Math.floor(remaining / (1000 * 60 * 60));
+      remaining %= 1000 * 60 * 60;
+      const minutes = Math.floor(remaining / (1000 * 60));
+      remaining %= 1000 * 60;
+      const seconds = Math.floor(remaining / 1000);
+
+      // Get current displayed values
+      const currentDays    = document.querySelector("[data-value='days-top']").textContent || "00";
+      const currentHours   = document.querySelector("[data-value='hours-top']").textContent || "00";
+      const currentMinutes = document.querySelector("[data-value='minutes-top']").textContent || "00";
+      const currentSeconds = document.querySelector("[data-value='seconds-top']").textContent || "00";
+
+      // Update each flip card if needed, padding numbers to 2 digits.
+      updateFlipCard("days", currentDays, String(days).padStart(2, "0"));
+      updateFlipCard("hours", currentHours, String(hours).padStart(2, "0"));
+      updateFlipCard("minutes", currentMinutes, String(minutes).padStart(2, "0"));
+      updateFlipCard("seconds", currentSeconds, String(seconds).padStart(2, "0"));
+    }
+
+    // Initialize all flip cards to "00"
+    updateFlipCard("days",    "", "00");
+    updateFlipCard("hours",   "", "00");
+    updateFlipCard("minutes", "", "00");
+    updateFlipCard("seconds", "", "00");
+
+    // Update countdown every second
+    setInterval(updateCountdown, 1000);
+  </script>
+
+</body>
+</html>
