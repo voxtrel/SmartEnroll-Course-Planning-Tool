@@ -21,7 +21,6 @@ SmartEnroll is a course registration and scheduling web application built with R
 
 ### Prerequisites
 
-- Ruby 3.2+ (recommended Ruby 3.4.4 or later)
-- Rails 7.x
-- Node.js & Yarn
+- Ruby 3.4.4
+- Rails 8.0
 - SQLite3 or PostgreSQL
